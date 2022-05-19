@@ -1,47 +1,68 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Button, View, SafeAreaView, Animated, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, SafeAreaView, Animated, Alert } from 'react-native';
 import HighFiveRight from './assets/highfive-right.svg';
 import HighFiveLeft from './assets/highfive-left.svg';
+import { easeInOut } from 'popmotion';
+import Button from 'react-native-button'
 
 
 
 const App = () => {
-
-  const movement = () => {
-  const startXValue = new Animated.Value(60);
-  const startYValue = new Animated.Value(0);
-
+  const [xDirection] = useState(new Animated.Value(0));
+  const [yDirection] = useState(new Animated.Value(60));
+  const animation = function useAnimation() { 
     Animated.sequence([
-      Animated.timing(startYValue,{
-        toValue: -120,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(startXValue,{
-      toValue: 60,
-      duration: 300,
-      useNativeDriver: true,
-    }),
-    ]).start();
-
+      Animated.timing(
+        yDirection,
+        {
+          toValue: -60,
+          duration: 500,
+          useNativeDriver: 'true',
+          easeOut: 0.2
+        }
+      ),
+        Animated.timing(
+          xDirection,
+          {
+            toValue: 70,
+            duration: 500,
+            useNativeDriver: 'true',
+            easeInOut: 0.2
+          }
+        )
+      ]).start()
   }
+
   return (
     
     <SafeAreaView style={styles.container}>
 
       <View style={styles.appButtonContainer}>
 
-      <Animated.View>
+      <Animated.View style={{
+        transform: [
+          {translateY: yDirection},
+          {translateX: xDirection},
+        ]
+      }}>
       <HighFiveLeft style={styles.iconStyles}/>
       </Animated.View>
       
-        <Button style={styles.appButton}
-          title="Finalizar Viagem"
-          color={'#FF7E2E'}
-          onPress={movement}
-        />
 
-      <Animated.View>
+          <Button
+            containerStyle={{padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
+            disabledContainerStyle={{backgroundColor: 'grey'}}
+            style={{fontSize: 20, color: '#F7e8a1'}}
+            onPress={() => animation()}>
+              Press Me
+          </Button>
+
+      <Animated.View style={{
+        transform: [
+          {translateX: xDirection},
+          {translateY: yDirection},
+        ]
+      }}>
       <HighFiveRight style={styles.iconStyles}/>
       </Animated.View>
         
