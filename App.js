@@ -2,35 +2,64 @@ import React, { useState } from 'react';
 import { StyleSheet, View, SafeAreaView, Animated, Alert } from 'react-native';
 import HighFiveRight from './assets/highfive-right.svg';
 import HighFiveLeft from './assets/highfive-left.svg';
-import { easeInOut } from 'popmotion';
+import { Easing } from 'popmotion';
 import Button from 'react-native-button'
 
 
 
 const App = () => {
-  const [xDirection] = useState(new Animated.Value(0));
-  const [yDirection] = useState(new Animated.Value(60));
-  const animation = function useAnimation() { 
+  const [leftIconXDirection] = useState(new Animated.Value(0));
+  const [leftIconYDirection] = useState(new Animated.Value(60));
+  const [rightIconXDirection] = useState(new Animated.Value(0));
+  const [rightIconYDirection] = useState(new Animated.Value(60));
+  const [opacityText] = useState(new Animated.Value(5));
+  
+  function useAnimation() { 
     Animated.sequence([
-      Animated.timing(
-        yDirection,
-        {
-          toValue: -60,
-          duration: 500,
-          useNativeDriver: 'true',
-          easeOut: 0.2
-        }
-      ),
+      Animated.parallel([
         Animated.timing(
-          xDirection,
-          {
-            toValue: 70,
+          rightIconYDirection, {
+            toValue: -60,
             duration: 500,
             useNativeDriver: 'true',
-            easeInOut: 0.2
-          }
-        )
-      ]).start()
+            easeOut: 1.2
+          }),
+          Animated.timing(
+            leftIconYDirection,
+            {
+              toValue: -60,
+              duration: 500,
+              useNativeDriver: 'true',
+              easeOut: 1.2
+            }
+          )
+        ]),
+        Animated.parallel([
+          Animated.timing(
+            rightIconXDirection,{
+              toValue: -100,
+              duration: 500,
+              useNativeDriver: 'true',
+              easeInOut: 1.2
+            }),
+            Animated.timing(
+              leftIconXDirection, {
+                toValue: 100,
+                duration: 500,
+                useNativeDriver: 'true',
+                easeInOut: 1.2
+            })
+        ])
+    ]).start()
+
+    Animated.timing(
+      opacityText, {
+        toValue: 0,
+        duration: 800,
+        easeOut: 1,
+        useNativeDriver: 'true'        
+      }).start()
+
   }
 
   return (
@@ -41,31 +70,32 @@ const App = () => {
 
       <Animated.View style={{
         transform: [
-          {translateY: yDirection},
-          {translateX: xDirection},
+          {translateY: leftIconYDirection},
+          {translateX: leftIconXDirection},
         ]
       }}>
       <HighFiveLeft style={styles.iconStyles}/>
       </Animated.View>
-      
-
-          <Button
+      <Animated.View style={{opacity: opacityText}} >
+      <Button
             containerStyle={{padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
             disabledContainerStyle={{backgroundColor: 'grey'}}
-            style={{fontSize: 20, color: '#F7e8a1'}}
-            onPress={() => animation()}>
-              Press Me
-          </Button>
+            style={{fontSize: 20, color: '#9e1d21'}}
+            onPress={() => useAnimation()}>
+              Finalizar viagem
+      </Button>
+      </Animated.View>
 
       <Animated.View style={{
         transform: [
-          {translateX: xDirection},
-          {translateY: yDirection},
+          {translateY: rightIconYDirection},
+          {translateX: rightIconXDirection},
         ]
       }}>
       <HighFiveRight style={styles.iconStyles}/>
       </Animated.View>
-        
+      
+
 
       </View>
 
@@ -89,6 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flexDirection: 'row',
     alignItems: 'center',
+    position: 'absolute'
   },
   iconStyles: {
     height: 50,
