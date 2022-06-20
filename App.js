@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { StyleSheet, View, SafeAreaView, Animated, Alert } from 'react-native';
 import HighFiveRight from './assets/highfive-right.svg';
 import HighFiveLeft from './assets/highfive-left.svg';
-import { Easing } from 'popmotion';
 import Button from 'react-native-button'
 
 
@@ -13,60 +12,98 @@ const App = () => {
   const [rightIconXDirection] = useState(new Animated.Value(0));
   const [rightIconYDirection] = useState(new Animated.Value(60));
   const [opacityText] = useState(new Animated.Value(5));
+  const [buttonText, setButtonText] = useState('FINALIZAR VIAGEM');
+  const [backgroundNewColor, setBackgroundNewColor] = useState('FF7E2E');
+  const [textNewColor, setTextNewColor] = useState('#FF7E2E');
+  const [disabled, setDisabled] = React.useState(false);  
   
+
   function useAnimation() { 
+   
     Animated.sequence([
       Animated.parallel([
-        Animated.timing(
-          rightIconYDirection, {
+        Animated.timing(rightIconYDirection, {
             toValue: -60,
             duration: 500,
             useNativeDriver: 'true',
             easeOut: 1.2
           }),
-          Animated.timing(
-            leftIconYDirection,
-            {
-              toValue: -60,
-              duration: 500,
-              useNativeDriver: 'true',
-              easeOut: 1.2
-            }
-          )
-        ]),
-        Animated.parallel([
-          Animated.timing(
-            rightIconXDirection,{
-              toValue: -100,
-              duration: 500,
-              useNativeDriver: 'true',
-              easeInOut: 1.2
-            }),
-            Animated.timing(
-              leftIconXDirection, {
-                toValue: 100,
-                duration: 500,
-                useNativeDriver: 'true',
-                easeInOut: 1.2
-            })
-        ])
+          Animated.timing(leftIconYDirection, {
+            toValue: -60,
+            duration: 500,
+            useNativeDriver: 'true',
+            easeOut: 1.2
+          })
+      ]),
+      Animated.parallel([
+        Animated.timing( rightIconXDirection, {
+          toValue: -100,
+          duration: 500,
+          useNativeDriver: 'true',
+          easeInOut: 1.2
+        }),
+        Animated.timing( leftIconXDirection, {
+          toValue: 100,
+          duration: 500,
+          useNativeDriver: 'true',
+          easeInOut: 1.2
+        })
+      ]),
+      Animated.parallel([
+        Animated.timing( rightIconYDirection, {
+          toValue: 60,
+          duration: 500,
+          useNativeDriver: 'true',
+          easeOut: 1
+        }),
+        Animated.timing( leftIconYDirection, {
+          toValue: 60,
+          duration: 500,
+          useNativeDriver: 'true',
+          easeOut: 1
+        })
+      ])
+    ]).start()
+    
+    Animated.sequence([
+      Animated.timing( opacityText, {
+          toValue: 0,
+          delay: 100,
+          duration: 600,
+          useNativeDriver: 'true'
+        }),
+      Animated.timing( opacityText, {
+        toValue: 5,
+        delay: 1000,
+        duration: 300,
+        useNativeDriver: 'true',
+      })
     ]).start()
 
-    Animated.timing(
-      opacityText, {
-        toValue: 0,
-        duration: 800,
-        easeOut: 1,
-        useNativeDriver: 'true'        
-      }).start()
-
+    setTimeout(() => {setButtonText('VIAGEM FINALIZADA'), setBackgroundNewColor('#41D958'), setTextNewColor('#FFFFFF'), setDisabled(true)}, 1350);
+    
   }
 
   return (
     
     <SafeAreaView style={styles.container}>
 
-      <View style={styles.appButtonContainer}>
+      <View style={{
+        backgroundColor: backgroundNewColor,
+        borderRadius: 6,
+        flexDirection: 'row',
+        alignItems: 'center',
+        overflow: 'hidden',
+        shadowRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.36,
+        shadowRadius: 6.68,
+        elevation: 4,
+      }}>
 
       <Animated.View style={{
         transform: [
@@ -74,16 +111,20 @@ const App = () => {
           {translateX: leftIconXDirection},
         ]
       }}>
+
       <HighFiveLeft style={styles.iconStyles}/>
+
       </Animated.View>
+
       <Animated.View style={{opacity: opacityText}} >
+
       <Button
-            containerStyle={{padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
-            disabledContainerStyle={{backgroundColor: 'grey'}}
-            style={{fontSize: 20, color: '#9e1d21'}}
-            onPress={() => useAnimation()}>
-              Finalizar viagem
-      </Button>
+        style={{color: textNewColor, fontSize: 18, fontWeight: '700', alignContent: 'center'}}
+        disabled={disabled}
+        onPress={() => useAnimation()} >
+        {buttonText}
+        </Button>
+
       </Animated.View>
 
       <Animated.View style={{
@@ -94,9 +135,6 @@ const App = () => {
       }}>
       <HighFiveRight style={styles.iconStyles}/>
       </Animated.View>
-      
-
-
       </View>
 
     </SafeAreaView>
@@ -104,23 +142,6 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  appButtonContainer: {
-    elevation: 8,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 6,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    shadowColor: "#00000",
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 9,
-    fontSize: 12,
-    fontWeight: 'bold',
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute'
-  },
   iconStyles: {
     height: 50,
     width: 50,
